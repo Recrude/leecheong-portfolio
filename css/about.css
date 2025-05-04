@@ -111,6 +111,10 @@ main {
         position: relative;
         top: 0.05rem;
     }
+    h3 span.ml-ko {
+        font-size: 2.4rem;
+
+    }
     .about-content {
         display: flex;
         flex-direction: column;
