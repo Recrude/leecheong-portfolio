@@ -11,6 +11,8 @@
     flex-direction: row;
     gap: 1rem;
     justify-content: space-around;
+    border-top: 1px solid black;
+     padding-top: 1rem;
 }
 .contact-item {
     display: block;
