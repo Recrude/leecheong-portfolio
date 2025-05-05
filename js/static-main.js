@@ -546,7 +546,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 그리드 열 변환 애니메이션 시작
                 startGridColumnAnimation();
             }, 1000);
-        }, 1500);
+        }, 1800);
     }
     
     // 그리드 열 변환 애니메이션 시작
