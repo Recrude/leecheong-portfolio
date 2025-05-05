@@ -23,7 +23,29 @@ document.addEventListener('DOMContentLoaded', () => {
         'glass-eye': 'glass-eye',
         'the-faceless': 'the-faceless',
         'shade-of-blue': 'shade-of-blue',
-        'imperfect-jeonju': 'imperfect-jeonju'
+        'imperfect-jeonju': 'imperfect-jeonju',
+        'glass-eye-book': 'glass-eye',
+        'shade-of-blue-book': 'shade-of-blue'
+    };
+
+    // 이미지 형식 매핑
+    const imageFormat = {
+        'glass-eye': 'webp',
+        'the-faceless': 'webp',
+        'shade-of-blue': 'webp',
+        'imperfect-jeonju': 'webp',
+        'glass-eye-book': 'jpg',
+        'shade-of-blue-book': 'jpg'
+    };
+
+    // 이미지 기본 경로 매핑
+    const imagePath = {
+        'glass-eye': '/src/images/webp/',
+        'the-faceless': '/src/images/webp/',
+        'shade-of-blue': '/src/images/webp/',
+        'imperfect-jeonju': '/src/images/webp/',
+        'glass-eye-book': '/src/images/jpg/books/',
+        'shade-of-blue-book': '/src/images/jpg/books/'
     };
 
     // 각 프로젝트별 이미지 목록을 저장할 객체
@@ -56,30 +78,42 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!sliderContainer || !prevBtn || !nextBtn) return;
         
-        // 테스트용 이미지 배열 (실제로는 서버에서 가져와야 함)
+        // 이미지 배열
         let imagePaths = [];
         
-        // 프로젝트별 예상 이미지 수 (실제로는 이런 예측이 필요 없음)
+        // 프로젝트별 예상 이미지 수
         const expectedImageCount = {
             'glass-eye': 100,
             'the-faceless': 50, 
             'shade-of-blue': 30,
-            'imperfect-jeonju': 20
+            'imperfect-jeonju': 20,
+            'glass-eye-book': 8,
+            'shade-of-blue-book': 6
         };
         
-        // 테스트용 이미지 경로 생성
+        // 이미지 경로 생성
         for (let i = 1; i <= expectedImageCount[projectId]; i++) {
-            imagePaths.push(`/src/images/webp/${projectFolders[projectId]}/${projectFolders[projectId]}_${i}-min.webp`);
+            if (projectId.includes('book')) {
+                // books 섹션은 jpg 파일 사용, 파일명 형식이 다름
+                imagePaths.push(`${imagePath[projectId]}${projectFolders[projectId]}/${projectFolders[projectId]}-${i.toString().padStart(2, '0')}-min.${imageFormat[projectId]}`);
+            } else {
+                // photos 섹션은 webp 파일 사용
+                imagePaths.push(`${imagePath[projectId]}${projectFolders[projectId]}/${projectFolders[projectId]}_${i}-min.${imageFormat[projectId]}`);
+            }
         }
         
-        // 이미지 배열 섞기
-        imagePaths = shuffleArray(imagePaths);
+        // photos 섹션만 이미지 배열 섞기
+        if (!projectId.includes('book')) {
+            imagePaths = shuffleArray(imagePaths);
+        }
+        // books 섹션은 순서대로 표시
         
         // 프로젝트 이미지 목록에 저장
         projectImages[projectId] = imagePaths;
         
-        // 처음 10개 이미지 로드
-        loadMoreImages(projectId, 5);
+        // 이미지 로드 - books는 모두 로드, photos는 최초 5개만 로드
+        const initialLoadCount = projectId.includes('book') ? expectedImageCount[projectId] : 5;
+        loadMoreImages(projectId, initialLoadCount);
         
         // 이전 이미지 버튼 클릭 이벤트
         prevBtn.addEventListener('click', () => {
@@ -96,15 +130,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 projectState[projectId].currentIndex++;
                 updateSlider(projectId);
                 
-                // 끝에 가까워지면 더 많은 이미지 로드
-                if (projectState[projectId].currentIndex >= projectState[projectId].loadedImages - 2) {
+                // 끝에 가까워지면 더 많은 이미지 로드 (books 섹션은 이미 모두 로드됨)
+                if (!projectId.includes('book') && projectState[projectId].currentIndex >= projectState[projectId].loadedImages - 2) {
                     loadMoreImages(projectId, 3);
                 }
             }
         });
     }
     
-    // 더 많은 이미지 로드 함수
+    // 이미지 로드 함수
     function loadMoreImages(projectId, count) {
         const galleryCol = document.querySelector(`.project-gallery-col[data-project="${projectId}"]`);
         if (!galleryCol) return;
@@ -125,20 +159,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 img.alt = `${projectId} image ${index + 1}`;
                 img.loading = 'lazy'; // 지연 로딩 적용
                 
-                // 이미지가 로드되면 슬라이더 업데이트
+                // 첫 번째 이미지는 바로 표시, 나머지는 숨김
+                if (currentLoadedCount === 0 && i === 0) {
+                    img.style.display = 'block';
+                } else {
+                    img.style.display = 'none';
+                }
+                
+                // 이미지가 로드되면 처리
                 img.onload = function() {
-                    // 첫 번째 이미지가 로드되면 활성화
-                    if (sliderContainer.children.length === 1) {
-                        img.style.display = 'block';
-                    } else {
+                    // 이미지 로드 완료
+                    if (currentLoadedCount === 0 && i === 0 && sliderContainer.children.length === 1) {
+                        // 첫 이미지가 로드되면 보이게 설정
                         img.style.display = 'block';
                     }
                 };
                 
                 img.onerror = function() {
-                    // 이미지 로드 실패 시 대체 이미지나 오류 처리
+                    // 이미지 로드 실패 시 대체 이미지 처리
+                    console.error(`Failed to load image: ${projectImageList[index]}`);
                     img.src = 'https://dummyimage.com/600x400/cccccc/ffffff&text=Image+Not+Found';
-                    img.style.display = 'block';
+                    
+                    if (currentLoadedCount === 0 && i === 0) {
+                        img.style.display = 'block';
+                    }
                 };
                 
                 sliderContainer.appendChild(img);
@@ -149,13 +193,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // 로드된 이미지 수 업데이트
         projectState[projectId].loadedImages = currentLoadedCount + imagesAdded;
         
-        // 처음 이미지가 로드되면 슬라이더 초기화
+        // 첫 이미지가 로드되면 슬라이더 초기화
         if (currentLoadedCount === 0 && imagesAdded > 0) {
             updateSlider(projectId);
         }
     }
     
-    // 슬라이더 위치 업데이트
+    // 슬라이더 업데이트 함수
     function updateSlider(projectId) {
         const galleryCol = document.querySelector(`.project-gallery-col[data-project="${projectId}"]`);
         if (!galleryCol) return;
@@ -163,8 +207,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const sliderContainer = galleryCol.querySelector('.slider-container');
         if (!sliderContainer) return;
         
+        const images = sliderContainer.querySelectorAll('img');
         const currentIndex = projectState[projectId].currentIndex;
-        sliderContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
+        
+        // 모든 이미지 숨기기
+        images.forEach(img => {
+            img.style.display = 'none';
+        });
+        
+        // 현재 인덱스 이미지만 표시
+        if (images[currentIndex]) {
+            images[currentIndex].style.display = 'block';
+        }
     }
     
     // 배열을 무작위로 섞는 함수
