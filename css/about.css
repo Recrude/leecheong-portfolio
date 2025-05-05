@@ -3,6 +3,8 @@
     flex-direction: row;
      gap: 1rem;
      justify-content: space-around;
+     border-top: 1px solid black;
+     padding-top: 1rem;
 }
 .contact-info {
     display: flex;
@@ -24,7 +26,6 @@
 }
 
 section {
-    margin-top: 2rem;
     margin-bottom: 6rem;
 }
 
@@ -54,8 +55,9 @@ h3 .en {
     width: 100%;
     color: white;
     text-shadow: -1px 0px black, 0px 1px black, 1px 0px black, 0px -1px black;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
+}
+.left{
+   border-right: 1px solid black;
 }
 .submenu-item :hover{
     text-align: center;
@@ -83,36 +85,36 @@ main {
     margin-top: 0;
     padding-top: 0;
 }
+
 @media (max-width: 768px) {
     /* body {
         font-size: 6px;
     } */
 
     h3 {
-        font-size: 2.4rem;
+        font-size: 2.0rem;
     }
     h3 span.ml-en {
         font-weight: 700;
-        font-size: 2.6rem;
+        font-size: 2.1rem;
     }
 
     p {
         font-size: 1.2rem
     }
     section {
-        margin-top: 1rem;
         margin-bottom: 3rem;
     }
     h3 span.ml-en {
         font-family: "neue-haas-grotesk-display", -apple-system, sans-serif;
         font-weight: 600;
         letter-spacing: -0.1rem;
-        font-size: 2.5rem;
+        font-size: 2.1rem;
         position: relative;
-        top: 0.05rem;
+        top: 0.04rem;
     }
     h3 span.ml-ko {
-        font-size: 2.4rem;
+        font-size: 2.0rem;
 
     }
     .about-content {
