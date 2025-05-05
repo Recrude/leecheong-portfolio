@@ -67,7 +67,22 @@ h3 span.ml-ko {
   position:relative;
   top:0;
 }
-
+h4 span.ml-en {
+  font-family: "neue-haas-grotesk-display", -apple-system, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.1rem;
+  font-size: 2.4rem;
+  position: relative;
+  top: 0.1rem;
+}
+h4 span.ml-ko {
+  font-family: "pretendard", sans-serif;
+  font-weight: 800;
+  font-size: 2.4rem;
+  /*below two lines are for baseline shift */
+  position:relative;
+  top:0;
+}
 
 
 
